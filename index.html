@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Renderer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        #content {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        .caption {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .dark {
+            background-color: #333;
+            color: #f4f4f4;
+        }
+        button {
+            margin: 20px 0;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <button id="toggle-theme">Toggle Theme</button>
+        <div id="markdown-output">Loading...</div>
+    </div>
+    <script>
+        const fetchMarkdown = async () => {
+            try {
+                const response = await fetch('./input.md');
+                if (!response.ok) throw new Error('Network response was not ok');
+                const text = await response.text();
+                renderMarkdown(text);
+            } catch (error) {
+                document.getElementById('markdown-output').innerHTML = 'Failed to load data.';
+            }
+        };
+
+        const renderMarkdown = (markdown) => {
+            const html = markdown
+                .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1"><div class="caption">$1</div>') // Images
+                .replace(/## (.*?)\n/g, '<h2>$1</h2>') // H2
+                .replace(/# (.*?)\n/g, '<h1>$1</h1>') // H1
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold
+                .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italics
+                .replace(/\n/g, '<br>'); // New lines
+            document.getElementById('markdown-output').innerHTML = html;
+        };
+
+        document.getElementById('toggle-theme').addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+        });
+
+        fetchMarkdown();
+    </script>
+    <!-- build-id: 2023-10-03T12:00:00Z -->
+</body>
+</html>
+<!-- build-id: 2025-10-16T11:47:27.745073 -->
